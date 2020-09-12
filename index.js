@@ -111,12 +111,19 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons/', (request,response) => {
     const body = request.body
-    console.log(body)
+    const name = persons.filter(person => {
+        if (person.name === body.name) {
+           
+            return response.status(404).json({
+                error: 'Name already exists'
+            })
+        } 
+    });
     if(!body.name){
         return response.status(404).json({
             error: 'Name is missing from request'
         })
-    }
+    } 
 
     const person = {
         name: body.name,
