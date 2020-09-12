@@ -1,7 +1,26 @@
-const express = require ('express');
+const express = require ('express')
+const morgan = require('morgan')
+const bodyParser = require('body-parser')
+const morganBody = require('morgan-body')
 const app = express()
 
 app.use(express.json())
+app.use(bodyParser.json())
+morganBody(app)
+morgan('tiny')
+  
+morgan.token('id', function getId (req) {
+    return req.id
+  })
+
+morgan.token('res-body', (_req, res) =>
+  JSON.stringify(res.__custombody__),
+)
+  
+// app.use(morgan('combined'));
+app.use(morgan(' :id :method :url :response-time :res[content-type] :res-body'))
+
+
 
 let persons = [
           {
@@ -79,6 +98,16 @@ const generateId = () => {
     : 0 
     return maxId
 }
+
+// const requestLogger = (request, response, next) => {
+//     console.log('Method:', request.method)
+//     console.log('Path:  ', request.path)
+//     console.log('Body:  ', request.body)
+//     console.log('---')
+//     next()
+//   }
+
+//   app.use(requestLogger)
 
 app.get('/', (request, response) => {
     response.send(`<h1>Hello Worlds</h1>`)
