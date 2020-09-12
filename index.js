@@ -1,7 +1,7 @@
 const express = require ('express');
 const app = express()
 
-// app.use(express.json)
+app.use(express.json())
 
 let persons = [
           {
@@ -73,6 +73,13 @@ let persons = [
 
 let time = new Date();
 
+const generateId = () => {
+    const maxId = persons.length > 1
+    ? Math.max(...persons.map(n => n.id))
+    : 0 
+    return maxId
+}
+
 app.get('/', (request, response) => {
     response.send(`<h1>Hello Worlds</h1>`)
 })
@@ -100,6 +107,26 @@ app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id);
     persons = persons.filter(person => person.id !== id)
     response.status(204).end()
+})
+
+app.post('/api/persons/', (request,response) => {
+    const body = request.body
+    console.log(body)
+    if(!body.name){
+        return response.status(404).json({
+            error: 'Name is missing from request'
+        })
+    }
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        Date: new Date(),
+        id: generateId(),
+    }
+    persons = persons.concat(person)
+
+    response.json(person)
 })
 
 const PORT = 3001
