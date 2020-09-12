@@ -1,0 +1,19 @@
+{
+  "name": "phonebook_express",
+  "version": "1.0.0",
+  "description": "simple phonebook app using express  - based on chapter 3 of fullstackopen.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vonstroepp/phonebook.git"
+  },
+  "author": "Patrick Tappe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vonstroepp/phonebook/issues"
+  },
+  "homepage": "https://github.com/vonstroepp/phonebook#readme"
+}
