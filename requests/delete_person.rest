@@ -1,0 +1,7 @@
+DELETE  http://localhost:3001/api/persons/5f661b89ff8a01485a64308b
+Content-Type: application/json
+
+{
+    "name": "Don Abramov",
+    "number": 8675309
+}
