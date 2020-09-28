@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const morganBody = require('morgan-body')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator');
 // const logger = require('logger')
 
 const app = express()
@@ -20,6 +21,24 @@ morgan('tiny')
 const Person = require('./models/person')
 
 let time = new Date();
+
+const personSchema = mongoose.Schema({
+  name: {
+    type: String,
+    minilength: 3,
+    required: true
+  },
+  number :{
+    type: Number,
+    minilength: 7,
+  },
+  date: {
+    type: Date,
+    required: true
+  },
+})
+
+personSchema.plugin(uniqueValidator);
 
 app.get('/', (request, response) => {
     response.send(`<h1>Phonebook App</h1>`)
@@ -47,7 +66,6 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
     .then(result => {
@@ -56,21 +74,22 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons/', (request,response) => {
+app.post('/api/persons/', (request,response, next) => {
   const body = request.body
-  if(body.name === undefined){
-    return response.status(400).json({error: 'content missing'})
-  }
-  
+
   const person = new Person({
     name: body.name,
     number: body.number,
     date: new Date()
   })
   
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  person
+    .save()
+      .then(savedPerson => savedPerson.toJSON())
+      .then(savedAndFormattedPerson => {
+        response.json(savedAndFormattedPerson)
+      })
+      .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
@@ -85,6 +104,8 @@ const errorHandler = (error, request, response, next) => {
 
   if(error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted ID '})
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
   next(error)
 }
